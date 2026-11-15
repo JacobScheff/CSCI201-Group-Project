@@ -8,6 +8,4 @@ if [ -n "${RENDER_DATABASE_URL:-}" ]; then
   export SPRING_DATASOURCE_URL="jdbc:postgresql://${database_address}?sslmode=require"
 fi
 
-# A mounted disk can hide the directory ownership set when building the image.
-chown rally:rally /app/images
-exec gosu rally java -jar app.jar "$@"
+exec java -jar app.jar "$@"

@@ -64,3 +64,9 @@ CREATE TABLE IF NOT EXISTS player_answers (
 CREATE INDEX IF NOT EXISTS quizzes_owner_idx ON quizzes(owner_id);
 CREATE INDEX IF NOT EXISTS history_host_idx ON games(host_id);
 CREATE INDEX IF NOT EXISTS history_player_idx ON game_players(user_id);
+
+CREATE TABLE IF NOT EXISTS question_images (
+  name VARCHAR(64) PRIMARY KEY,
+  media_type VARCHAR(16) NOT NULL,
+  contents BYTEA NOT NULL
+);

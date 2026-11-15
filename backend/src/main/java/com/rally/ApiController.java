@@ -3,8 +3,6 @@ package com.rally;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.beans.factory.annotation.Value;
-import java.nio.file.*;
 import java.util.*;
 import static com.rally.Models.*;
 
@@ -15,8 +13,8 @@ public class ApiController {
     final QuizService quizzes;
     final GameManager games;
     final GameHistoryService history;
-    final Path images;
-    public ApiController(AuthService auth,QuizService quizzes,GameManager games,GameHistoryService history,@Value("${app.images}") String images) { this.auth=auth;this.quizzes=quizzes;this.games=games;this.history=history;this.images=Path.of(images); }
+    final ImageStorage images;
+    public ApiController(AuthService auth,QuizService quizzes,GameManager games,GameHistoryService history,ImageStorage images) { this.auth=auth;this.quizzes=quizzes;this.games=games;this.history=history;this.images=images; }
     @GetMapping("/health") public Object health() { return Map.of("status","ok"); }
     @PostMapping("/auth/register") public Object register(@Valid @RequestBody Register body) { return auth.register(body); }
     @PostMapping("/auth/login") public Object login(@Valid @RequestBody Login body) { return auth.login(body); }
@@ -37,9 +35,8 @@ public class ApiController {
         byte[] bytes=file.getBytes();
         String extension=imageExtension(bytes);
         if(extension==null||!Objects.equals(file.getContentType(),switch(extension) {case "jpg"->"image/jpeg";case "png"->"image/png";case "gif"->"image/gif";default->"image/webp";})) throw ApiException.bad("Upload a PNG, JPEG, GIF, or WebP image with a matching file type.");
-        Files.createDirectories(images);
         String name=UUID.randomUUID()+"."+extension;
-        Files.write(images.resolve(name),bytes,StandardOpenOption.CREATE_NEW);
+        images.save(name,file.getContentType(),bytes);
         return Map.of("url","/images/"+name);
     }
     static String imageExtension(byte[] b) {
