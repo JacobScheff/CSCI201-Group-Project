@@ -3,19 +3,19 @@ services:
     name: rally-quiz-api
     runtime: docker
     region: oregon
-    plan: 0.5c-512mb
+    plan: free
     dockerContext: ./backend
     dockerfilePath: ./backend/Dockerfile
     healthCheckPath: /api/health
-    disk:
-      name: quiz-images
-      mountPath: /app/images
-      sizeGB: 1
     envVars:
       - key: PORT
         value: "8080"
       - key: APP_IMAGES
         value: /app/images
+      - key: APP_IMAGES_IN_DATABASE
+        value: "true"
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xmx192m -XX:ActiveProcessorCount=2"
       - key: APP_ORIGINS
         sync: false
       - key: JWT_SECRET
@@ -37,6 +37,6 @@ databases:
     databaseName: rally
     user: rally
     region: oregon
-    plan: 0.1c-256mb
+    plan: free
     postgresMajorVersion: "16"
     ipAllowList: []
