@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: rally-quiz-api
+    runtime: docker
+    region: oregon
+    plan: 0.5c-512mb
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /api/health
+    disk:
+      name: quiz-images
+      mountPath: /app/images
+      sizeGB: 1
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: APP_IMAGES
+        value: /app/images
+      - key: APP_ORIGINS
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: RENDER_DATABASE_URL
+        fromDatabase:
+          name: rally-quiz-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: rally-quiz-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: rally-quiz-db
+          property: password
+databases:
+  - name: rally-quiz-db
+    databaseName: rally
+    user: rally
+    region: oregon
+    plan: 0.1c-256mb
+    postgresMajorVersion: "16"
+    ipAllowList: []
